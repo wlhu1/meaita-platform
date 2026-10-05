@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>教师社区｜ME-AITA 教师成长智能体</title>
+<link rel="stylesheet" href="css/meaita.css" />
+<link rel="stylesheet" href="css/campus.css" />
+<style>
+  .composer{ background:#fff; border:1px solid #d8e6fb; border-radius:14px; padding:14px; margin-bottom:14px; }
+  .composer input, .composer textarea{ width:100%; border:1px solid #cfe0f8; border-radius:8px; padding:8px 10px; font-size:14px; font-family:inherit; margin-bottom:8px; box-sizing:border-box; }
+  .composer textarea{ min-height:90px; resize:vertical; }
+  .post{ background:#fff; border:1px solid #e0ebfb; border-radius:12px; padding:12px 14px; margin-bottom:10px; }
+  .post h3{ margin:0 0 4px; font-size:15px; color:#173c7b; }
+  .post .meta{ font-size:12px; color:#7a93b8; margin-bottom:6px; }
+  .post .body{ font-size:14px; color:#274e8d; line-height:1.7; white-space:pre-wrap; }
+  .post .del{ float:right; background:none; border:0; color:#c0392b; cursor:pointer; font-size:12px; }
+  .empty{ color:#7a93b8; text-align:center; padding:30px; }
+</style>
+</head>
+<body>
+<div class="campus-bg" aria-hidden="true"><div class="gate"></div><div class="gate-tint"></div><div class="veil"></div></div>
+<div class="page-bg" aria-hidden="true"></div>
+<header class="header">
+  <a class="brand" href="index.html"><div class="seal"><img src="assets/henu_logo.png" alt="河南大学校徽"></div>
+  <div><div class="university">河南大学</div><div class="en">HENAN UNIVERSITY</div></div>
+  <span class="brand-split"></span>
+  <div><div class="product-name">ME-AITA</div><div class="product-caption">教师成长智能体</div></div></a>
+  <nav class="topnav">
+    <a class="user-menu" href="index.html"><span class="avatar">⌂</span><span>返回首页</span></a>
+  </nav>
+</header>
+<main class="sub-page">
+  <div class="sub-head"><h1>教师社区</h1><a class="back-link" href="index.html">← 返回首页</a></div>
+  <div class="trial-note">本地教研讨论板：发布教学问题、分享备课经验与课例研究心得。内容仅保存在本机，无身份系统，删除操作请自行确认。</div>
+
+  <div class="composer">
+    <input id="cAuthor" placeholder="昵称（默认：匿名教师）" maxlength="30" />
+    <input id="cTitle" placeholder="帖子标题（2-80 字）" maxlength="80" />
+    <textarea id="cBody" placeholder="正文：教学问题、备课心得、课例研讨……"></textarea>
+    <button class="btn-primary" id="cSubmit" type="button" style="padding:9px 22px;">发布</button>
+  </div>
+
+  <div id="postList"><div class="empty">加载中…</div></div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  var $ = function(s){ return document.querySelector(s); };
+  function toast(msg){
+    var el = $("#toast"); el.textContent = msg; el.classList.add("on");
+    setTimeout(function(){ el.classList.remove("on"); }, 2400);
+  }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function load(){
+    fetch("api/community/posts").then(function(r){return r.json();}).then(function(d){
+      var list = $("#postList");
+      var posts = d.posts || [];
+      if(!posts.length){ list.innerHTML = '<div class="empty">还没有帖子，发布第一条教研讨论吧。</div>'; return; }
+      list.innerHTML = posts.map(function(p){
+        return '<div class="post" data-id="'+p.id+'">' +
+          '<button class="del" data-del="'+p.id+'">删除</button>' +
+          '<h3>'+esc(p.title)+'</h3>' +
+          '<div class="meta">'+esc(p.author)+' · '+esc(p.created_at)+'</div>' +
+          '<div class="body">'+esc(p.body)+'</div></div>';
+      }).join("");
+    }).catch(function(){ toast("加载失败"); });
+  }
+  $("#cSubmit").addEventListener("click", function(){
+    var author = $("#cAuthor").value.trim() || "匿名教师";
+    var title = $("#cTitle").value.trim();
+    var body = $("#cBody").value.trim();
+    if(title.length < 2 || body.length < 2){ toast("标题和正文至少各 2 个字"); return; }
+    fetch("api/community/posts", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({author:author, title:title, body:body})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.ok){ $("#cTitle").value=""; $("#cBody").value=""; toast("已发布"); load(); }
+      else toast("发布失败");
+    }).catch(function(){ toast("网络错误"); });
+  });
+  $("#postList").addEventListener("click", function(e){
+    var del = e.target.closest("[data-del]");
+    if(!del) return;
+    if(!confirm("确定删除这条帖子？")) return;
+    fetch("api/community/posts/"+del.dataset.del, {method:"DELETE"})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ toast("已删除"); load(); }
+        else toast("删除失败");
+      }).catch(function(){ toast("网络错误"); });
+  });
+  load();
+})();
+</script>
+</body></html>

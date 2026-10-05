@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# 环境与密钥
+.env
+智谱API—key.txt
+智谱API-key.txt
+api_key.txt
+*.local
+
+# 数据与日志
+data/
+logs/
+*.db
+*.sqlite
+
+# 部署临时
+deploy/meaita-static/
+.wrangler/
+shots/
+debug_*.log
+*.log
+
+# IDE
+.vscode/
+.idea/

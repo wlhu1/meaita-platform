@@ -1,0 +1,373 @@
+/* ============================================================
+   ME-AITA 教师成长智能体 · 河大校园版 皮肤覆盖
+   在 meaita.css 之后加载，整体替换为浅蓝白校园风格
+   ============================================================ */
+
+:root{
+  --navy:#153d83;
+  --blue:#276bda;
+  --line:#cddfff;
+  --mist:#f1f7ff;
+  --ink:#153978;
+  --muted:#647da6;
+  --shadow:0 15px 42px rgba(52,103,177,.10);
+}
+
+html,body{
+  background:linear-gradient(180deg,#f8fcff 0%,#eef6ff 55%,#f7fbff 100%) !important;
+  color:var(--ink);
+}
+
+/* ---------- 隐藏旧的全屏背景图，改用分层背景 ---------- */
+.page-bg{ display:none !important; }
+
+/* ---------- 分层背景：整张大门照片横向铺满 + 中央白色蒙层 ---------- */
+.campus-bg{
+  position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+}
+.campus-bg .gate{
+  position:absolute; inset:0;
+  background-image:url("../assets/gate.png");
+  background-repeat:no-repeat;
+  background-position:center bottom;
+  background-size:cover;
+  opacity:1;
+  /* 中央遮罩：左右保留建筑，中央渐隐为白色 */
+  -webkit-mask-image:linear-gradient(90deg,
+    #000 0%,
+    #000 16%,
+    rgba(0,0,0,.55) 32%,
+    rgba(0,0,0,.12) 46%,
+    rgba(0,0,0,0) 50%,
+    rgba(0,0,0,.12) 54%,
+    rgba(0,0,0,.55) 68%,
+    #000 84%,
+    #000 100%);
+          mask-image:linear-gradient(90deg,
+    #000 0%,
+    #000 16%,
+    rgba(0,0,0,.55) 32%,
+    rgba(0,0,0,.12) 46%,
+    rgba(0,0,0,0) 50%,
+    rgba(0,0,0,.12) 54%,
+    rgba(0,0,0,.55) 68%,
+    #000 84%,
+    #000 100%);
+  filter:saturate(.6) brightness(1.07) contrast(.97);
+}
+/* 浅蓝白蒙层：统一色调，并进一步压暗中央 */
+.campus-bg .gate-tint{
+  position:absolute; inset:0;
+  background:
+    linear-gradient(90deg,
+      rgba(226,239,255,.55) 0%,
+      rgba(241,247,255,.25) 28%,
+      rgba(248,252,255,.88) 50%,
+      rgba(241,247,255,.25) 72%,
+      rgba(226,239,255,.55) 100%),
+    linear-gradient(180deg,
+      rgba(248,252,255,.35) 0%,
+      rgba(248,252,255,.15) 40%,
+      rgba(248,252,255,.55) 100%);
+}
+.campus-bg .right-art{ display:none; }
+.campus-bg .veil{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(248,252,255,.45) 0%,rgba(248,252,255,.2) 35%,rgba(248,252,255,.5) 100%);
+}
+
+/* ---------- 顶部导航 ---------- */
+.header{
+  position:relative; z-index:20;
+  background:rgba(255,255,255,.94) !important;
+  border-bottom:1px solid #dfebfb !important;
+  box-shadow:0 1px 10px rgba(32,81,144,.05) !important;
+  backdrop-filter:blur(8px);
+  height:80px !important;
+  padding:10px clamp(20px,4.2vw,74px) !important;
+}
+.brand{ gap:13px !important; }
+.brand .seal{
+  width:58px !important; height:58px !important;
+}
+.brand .university{
+  font-family:SimSun,"Noto Serif CJK SC",serif !important;
+  font-size:22px !important; letter-spacing:.16em !important; font-weight:900 !important;
+  color:var(--navy) !important;
+}
+.brand .en{
+  font-family:Arial,sans-serif !important; font-size:10px !important;
+  letter-spacing:.05em !important; color:var(--muted) !important;
+  margin-top:4px !important;
+}
+.brand .brand-split{
+  width:1px !important; height:43px !important; background:#9ab7e1 !important; margin:0 9px 0 3px !important;
+}
+.brand .product-name{
+  font-size:25px !important; font-weight:800 !important; letter-spacing:.06em !important;
+  color:var(--navy) !important;
+}
+.brand .product-caption{
+  font-size:11px !important; letter-spacing:.22em !important; font-weight:700 !important;
+  color:var(--muted) !important; margin-top:6px !important;
+}
+.topnav{ gap:clamp(14px,2.4vw,40px) !important; }
+.topnav button{
+  background:transparent !important; border:0 !important;
+  color:var(--navy) !important; font-weight:700 !important; font-size:15px !important;
+}
+.topnav button:hover{ color:var(--blue) !important; }
+.topnav .user-menu{
+  display:inline-flex !important; align-items:center; gap:9px;
+  background:linear-gradient(150deg,#74aaff,#1c66cb) !important;
+  color:#fff !important; border-radius:32px;
+  padding:6px 14px 6px 6px; font-size:13px;
+}
+.topnav .user-menu .avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.25);display:grid;place-items:center;
+  color:#fff; font-weight:800;
+}
+
+/* ---------- 主区域 ---------- */
+.main{
+  position:relative; z-index:5;
+  padding:50px 20px 26px !important;
+  max-width:none !important;
+}
+
+/* ---------- 主标题 ---------- */
+.hero{ text-align:center !important; padding:0 16px; }
+.hero h1{
+  font-family:SimSun,"Noto Serif CJK SC",serif !important;
+  font-size:clamp(34px,3.6vw,58px) !important;
+  font-weight:900 !important; color:#103884 !important;
+  letter-spacing:.03em !important; line-height:1.22 !important;
+  text-shadow:none !important;
+}
+.hero .subtitle{
+  margin:12px 0 0 !important;
+  font-size:clamp(15px,1.4vw,19px) !important;
+  color:var(--ink) !important; letter-spacing:.06em !important;
+}
+.hero .motto{
+  margin:8px 0 0 !important;
+  font-size:clamp(13px,1.1vw,15px) !important;
+  color:var(--muted) !important; letter-spacing:.12em !important;
+}
+
+/* ---------- 聊天主面板 ---------- */
+.chat-shell{
+  width:min(970px,100%) !important;
+  margin:32px auto 0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border:0 !important;
+}
+.chat-card{
+  border:1px solid rgba(196,216,246,.95) !important;
+  border-radius:28px !important;
+  background:rgba(255,255,255,.95) !important;
+  box-shadow:var(--shadow) !important;
+  backdrop-filter:blur(8px);
+  padding:26px 30px 22px !important;
+}
+.chat-card .greeting{
+  display:flex; align-items:center; gap:16px; margin-bottom:14px;
+}
+/* 替换原蓝色机器人头像为河大校徽 */
+.chat-card .robot{
+  width:56px !important; height:56px !important; border-radius:50% !important;
+  background:#fff !important; border:1px solid #e3edfb !important;
+  overflow:hidden; position:relative; flex:0 0 auto;
+}
+.chat-card .robot i{ display:none !important; }
+.chat-card .robot::before{
+  content:""; position:absolute; inset:0;
+  background:url("../assets/henu_logo.png") center/contain no-repeat;
+}
+.chat-card .hello h2{
+  color:var(--navy) !important; font-size:20px !important; font-weight:800 !important;
+}
+.chat-card .hello p{
+  color:var(--muted) !important; font-size:14px !important; line-height:1.7 !important;
+}
+
+/* 会话栏 */
+.session-bar{
+  background:#f1f7ff !important; border:1px solid #d8e6fb !important;
+  border-radius:12px !important; padding:8px 12px !important;
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+  margin:12px 0 !important;
+}
+.session-bar .session-label{ color:var(--muted); font-size:13px; font-weight:700; }
+.session-bar select{
+  flex:1 1 220px; min-width:160px;
+  border:1px solid #cfe0f8 !important; border-radius:8px !important;
+  background:#fff !important; color:var(--ink) !important;
+  padding:6px 10px !important; font-size:13px !important;
+}
+.session-bar .chip-btn{
+  background:#fff !important; border:1px solid #cfe0f8 !important; color:var(--blue) !important;
+  border-radius:8px !important; padding:6px 12px !important; font-size:13px !important; font-weight:600;
+}
+.session-bar .chip-btn.danger{ color:#c0392b !important; }
+
+/* 输入区 */
+.chat-compose{
+  background:#fff !important; border:1px solid #d8e6fb !important;
+  border-radius:16px !important; padding:12px 14px !important;
+  box-shadow:none !important;
+}
+.chat-compose textarea{
+  width:100% !important; border:0 !important; outline:none !important; resize:vertical;
+  font-size:15px !important; color:var(--ink) !important;
+  background:transparent !important; min-height:56px; line-height:1.6;
+}
+.compose-bottom{
+  display:flex; align-items:center; justify-content:space-between; margin-top:8px;
+}
+.compose-bottom .controls{ display:flex; gap:8px; }
+.compose-bottom .chip-btn{
+  background:#f1f7ff !important; border:1px solid #d8e6fb !important; color:var(--ink) !important;
+  border-radius:20px !important; padding:5px 12px !important; font-size:13px !important;
+}
+.compose-bottom .chip-btn[aria-pressed="true"]{ background:#e6f0ff !important; color:var(--blue) !important; }
+.compose-bottom .send{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(150deg,#3d7de0,#1c66cb) !important;
+  color:#fff !important; border:0 !important;
+  display:grid;place-items:center; cursor:pointer;
+  box-shadow:0 6px 16px rgba(40,100,200,.35);
+}
+.compose-bottom .send svg{ width:20px;height:20px; }
+
+/* 推荐问题 */
+.samples{
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:14px !important;
+}
+.samples .hint{ width:100%; color:var(--muted); font-size:13px; }
+.samples .sample{
+  background:#f4f9ff !important; border:1px solid #d8e6fb !important; color:var(--ink) !important;
+  border-radius:18px !important; padding:7px 14px !important; font-size:13px !important;
+  cursor:pointer; transition:.15s;
+}
+.samples .sample:hover{ background:#e6f0ff !important; color:var(--blue) !important; }
+
+/* 对话气泡（保持原功能，仅配色微调） */
+.bubble{ font-size:14.5px; line-height:1.75; }
+.bubble.user{
+  background:linear-gradient(150deg,#3d7de0,#1c66cb) !important; color:#fff !important;
+}
+.bubble.bot{
+  background:#f4f9ff !important; border:1px solid #e0ebfb !important; color:var(--ink) !important;
+}
+
+/* ---------- 底部三卡片 ---------- */
+.feature-grid{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:18px; width:min(970px,100%); margin:26px auto 0 !important;
+}
+.feature{
+  background:rgba(255,255,255,.95) !important;
+  border:1px solid rgba(196,216,246,.95) !important;
+  border-radius:20px !important;
+  padding:22px 22px !important;
+  display:flex; align-items:center; gap:16px;
+  text-align:left !important;
+  box-shadow:var(--shadow) !important;
+  cursor:pointer; transition:.18s;
+}
+.feature:hover{ transform:translateY(-2px); box-shadow:0 18px 46px rgba(52,103,177,.16); }
+.feature .feature-icon{
+  width:52px;height:52px;border-radius:14px;
+  display:grid;place-items:center; font-size:24px; color:#fff; flex:0 0 auto;
+}
+.feature.blue .feature-icon{ background:linear-gradient(150deg,#5b9bf0,#276bda); }
+.feature.purple .feature-icon{ background:linear-gradient(150deg,#8b7ce8,#5b4bd0); }
+.feature.teal  .feature-icon{ background:linear-gradient(150deg,#4fc3c9,#1f9aa5); }
+.feature h3{ color:var(--navy) !important; font-size:17px !important; font-weight:800 !important; margin:0 0 4px; }
+.feature p{ color:var(--muted) !important; font-size:13px !important; margin:0; line-height:1.6; }
+.feature .arrow{ margin-left:auto; color:#b3c8e8; font-size:22px; }
+
+/* 底部版权 */
+.footnote{
+  text-align:center; color:var(--muted) !important;
+  font-size:13px !important; margin:30px 0 10px !important;
+  letter-spacing:.05em;
+}
+
+/* ---------- 子页面（诊断/资源） ---------- */
+.sub-page{
+  position:relative; z-index:5;
+  max-width:1080px; margin:0 auto; padding:36px 20px 60px;
+}
+.sub-head{
+  display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px;
+}
+.sub-head h1{
+  font-family:SimSun,"Noto Serif CJK SC",serif;
+  font-size:32px; font-weight:900; color:var(--navy); margin:0;
+}
+.sub-head .back-link{ color:var(--blue); text-decoration:none; font-size:14px; font-weight:600; }
+.glass-card{
+  background:rgba(255,255,255,.96) !important;
+  border:1px solid rgba(196,216,246,.95) !important;
+  border-radius:22px !important;
+  box-shadow:var(--shadow) !important;
+  padding:26px !important;
+}
+
+/* ---------- 弹窗与 toast ---------- */
+.site-dialog{ z-index:60 !important; }
+.dialog-box{
+  background:#fff !important; border-radius:18px !important;
+  border:1px solid #d8e6fb !important;
+}
+.dialog-top h2{ color:var(--navy) !important; }
+.dialog-tiles button{
+  background:#f1f7ff !important; border:1px solid #d8e6fb !important; color:var(--ink) !important;
+  border-radius:10px !important;
+}
+.dialog-tiles button:hover{ background:#e6f0ff !important; color:var(--blue) !important; }
+.toast{
+  background:var(--navy) !important; color:#fff !important;
+  border-radius:10px !important;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:1100px){
+  /* 窄屏：中央蒙层稍窄，让两侧建筑更多露出 */
+  .campus-bg .gate{
+    -webkit-mask-image:linear-gradient(90deg,
+      #000 0%,#000 10%,rgba(0,0,0,.5) 26%,rgba(0,0,0,.1) 44%,rgba(0,0,0,0) 50%,
+      rgba(0,0,0,.1) 56%,rgba(0,0,0,.5) 74%,#000 90%,#000 100%);
+            mask-image:linear-gradient(90deg,
+      #000 0%,#000 10%,rgba(0,0,0,.5) 26%,rgba(0,0,0,.1) 44%,rgba(0,0,0,0) 50%,
+      rgba(0,0,0,.1) 56%,rgba(0,0,0,.5) 74%,#000 90%,#000 100%);
+  }
+}
+@media (max-width:800px){
+  .header{ height:auto !important; padding:10px 14px !important; }
+  .brand .university{ font-size:16px !important; }
+  .brand .en{ font-size:8px !important; }
+  .brand .product-name{ font-size:17px !important; }
+  .brand .product-caption{ font-size:8px !important; letter-spacing:.14em !important; }
+  .brand .seal{ width:42px !important; height:42px !important; }
+  .brand .brand-split{ height:30px !important; }
+  .topnav{ display:none !important; }
+  .main{ padding:28px 14px 20px !important; }
+  .chat-card{ padding:18px !important; }
+  .feature-grid{ grid-template-columns:1fr; gap:12px; }
+  /* 手机端：只保留极淡的顶部门影，避免建筑抢文字 */
+  .campus-bg .gate{ opacity:.5; }
+  .campus-bg .gate-tint{
+    background:
+      linear-gradient(90deg,
+        rgba(226,239,255,.75) 0%,
+        rgba(248,252,255,.95) 50%,
+        rgba(226,239,255,.75) 100%),
+      linear-gradient(180deg,rgba(248,252,255,.4) 0%,rgba(248,252,255,.6) 100%);
+  }
+}

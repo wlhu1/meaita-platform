@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>ME-AITA 多智能体智慧教学平台｜河南大学</title>
+<link rel="stylesheet" href="css/campus.css?v=20261005a" />
+<style>
+/* ===== 首页视觉 ===== */
+.home-landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px 24px;
+  position: relative;
+  z-index: 5;
+  box-sizing: border-box;
+}
+/* 主标题区域 */
+.landing-header { text-align: center; margin-bottom: 40px; }
+.landing-header h1 {
+  font-size: clamp(30px, 3.4vw, 50px);
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: .03em;
+  margin: 0 0 14px;
+  line-height: 1.2;
+}
+.landing-header .subtitle {
+  font-size: clamp(15px, 1.4vw, 22px);
+  color: var(--ink);
+  letter-spacing: .06em;
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+.landing-header .keywords {
+  font-size: clamp(12px, 1vw, 15px);
+  color: var(--muted);
+  letter-spacing: .22em;
+  margin: 0 0 16px;
+}
+.demo-badge {
+  display: inline-block;
+  background: rgba(39,107,218,.08);
+  border: 1px solid rgba(39,107,218,.15);
+  color: var(--blue);
+  font-size: 11.5px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  letter-spacing: .04em;
+}
+/* 身份卡 */
+.role-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(400px, 460px));
+  gap: 44px;
+  margin-top: 8px;
+}
+@media (max-width: 960px) {
+  .role-cards { grid-template-columns: minmax(320px, 460px); gap: 28px; }
+}
+.role-card {
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(80,140,220,.18);
+  border-radius: 24px;
+  padding: 38px 36px 32px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 36px rgba(30,80,150,.08);
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform .25s ease, box-shadow .25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 360px;
+  box-sizing: border-box;
+}
+.role-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 44px rgba(30,80,150,.12);
+}
+/* 图标：统一SVG线性风格 */
+.role-icon-wrap {
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 22px;
+  flex: 0 0 auto;
+}
+.role-card.student .role-icon-wrap {
+  background: rgba(39,107,218,.1);
+  color: var(--blue);
+}
+.role-card.teacher .role-icon-wrap {
+  background: rgba(63,95,199,.1);
+  color: #3f5fc7;
+}
+.role-icon-wrap svg {
+  width: 36px;
+  height: 36px;
+  stroke-width: 1.8;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.role-card h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0 0 8px;
+}
+.role-card .role-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0 0 18px;
+}
+.role-card .features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 26px;
+  font-size: 13.5px;
+  color: var(--ink);
+  flex: 1;
+}
+.role-card .features li {
+  padding: 5px 0 5px 22px;
+  position: relative;
+  line-height: 1.5;
+}
+.role-card .features li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--blue);
+  opacity: .7;
+}
+.role-card.teacher .features li::before { background: #3f5fc7; }
+.enter-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 26px;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #276bda, #1a5fb4);
+  text-decoration: none;
+  transition: all .2s;
+}
+.role-card.teacher .enter-btn {
+  background: linear-gradient(135deg, #3f5fc7, #2f4a9e);
+}
+.role-card .enter-btn:hover { transform: scale(1.02); }
+.enter-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+.landing-footer {
+  margin-top: 40px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: .1em;
+}
+</style>
+</head>
+<body class="home-app">
+<div class="campus-bg" aria-hidden="true">
+  <div class="gate"></div>
+  <div class="gate-tint"></div>
+  <div class="veil"></div>
+</div>
+
+<header class="header">
+  <a class="brand" href="/">
+    <div class="seal"><img src="assets/henu_logo.png" alt="河南大学校徽"></div>
+    <div>
+      <div class="university">河南大学</div>
+      <div class="en">HENAN UNIVERSITY</div>
+    </div>
+    <span class="brand-split"></span>
+    <div>
+      <div class="product-name">ME-AITA</div>
+      <div class="product-caption">多智能体智慧教学平台</div>
+    </div>
+  </a>
+</header>
+
+<main class="home-landing">
+  <div class="landing-header">
+    <h1>ME-AITA 多智能体智慧教学平台</h1>
+    <p class="subtitle">AI驱动课前 · 课中 · 课后全过程精准教学</p>
+    <p class="keywords">诊断 · 引导 · 学习 · 评价 · 改进</p>
+    <span class="demo-badge">演示版本 · 课程：概率论与数理统计</span>
+  </div>
+
+  <div class="role-cards">
+    <a href="/student?user=student001" class="role-card student">
+      <div class="role-icon-wrap">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.6"></circle>
+          <path d="M5.5 19c.6-3.2 3.2-5 6.5-5s5.9 1.8 6.5 5"></path>
+          <path d="M12 4.4V2.5M12 11.5v1.6"></path>
+          <path d="M17.5 6.5l1.6-.9M6.5 6.5l-1.6-.9"></path>
+        </svg>
+      </div>
+      <h2>学生学习端</h2>
+      <p class="role-desc">个性化学习 · 认知诊断 · AI学习伙伴</p>
+      <ul class="features">
+        <li>AI对话答疑（Help Ladder分级引导）</li>
+        <li>个性化知识图谱可视化</li>
+        <li>自适应学习路径规划</li>
+        <li>错题本与学习成长报告</li>
+      </ul>
+      <span class="enter-btn">进入学生端
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </span>
+    </a>
+
+    <a href="/teacher" class="role-card teacher">
+      <div class="role-icon-wrap">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="7" width="16" height="11" rx="2"></rect>
+          <path d="M12 4v3M12 18v2"></path>
+          <path d="M8 11.5h2M8 14h2M14 11.5h2M14 14h2"></path>
+        </svg>
+      </div>
+      <h2>教师教学端</h2>
+      <p class="role-desc">班级洞察 · 智能备课 · 教学决策支持</p>
+      <ul class="features">
+        <li>班级学情总览与知识图谱</li>
+        <li>高频错因智能分析</li>
+        <li>AI辅助教学设计</li>
+        <li>分层练习自动生成</li>
+      </ul>
+      <span class="enter-btn">进入教师端
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </span>
+    </a>
+  </div>
+
+  <p class="landing-footer">河南大学 · ME-AITA · 多智能体协同教学演示平台</p>
+</main>
+</body>
+</html>

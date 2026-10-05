@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta name="theme-color" content="#eaf4ff" />
+<title>优质资源推荐｜ME-AITA 教师成长智能体</title>
+<link rel="stylesheet" href="css/meaita.css" />
+</head>
+<body>
+<div class="page-bg" aria-hidden="true"></div>
+<header class="header"><a class="brand" href="index.html" aria-label="返回ME-AITA首页"><div class="seal" aria-hidden="true"><img src="assets/henu_logo.png" alt="河南大学校徽"></div><div><div class="university">河南大学</div><div class="en">HENAN UNIVERSITY</div></div><span class="brand-split"></span><div><div class="product-name">ME-AITA</div><div class="product-caption">教师成长智能体</div></div></a><nav class="topnav" aria-label="顶部导航"><a class="user-menu" href="index.html" style="display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.7);border:1px solid #d4e5fa;border-radius:32px;padding:4px 7px 4px 4px;font-size:13px;font-weight:700;white-space:nowrap;color:#173c75"><span class="avatar">⌂</span><span>返回首页</span></a></nav></header>
+<main class="sub-page">
+  <div class="sub-head">
+    <h1>优质资源推荐</h1>
+    <a class="back-link" href="index.html">← 返回首页</a>
+  </div>
+  <div class="trial-note">本页展示本地资源库中的真实资源（经核实的官方平台与文件链接）。支持按学段、学科、类别检索；后续可持续导入更多资源。</div>
+  <div class="glass-card">
+    <div class="res-filter">
+      <div class="diag-field"><label>学段</label><select id="fStage"><option>全部</option><option>小学</option><option>初中</option><option>高中</option><option>通用</option></select></div>
+      <div class="diag-field"><label>学科</label><select id="fSubject"><option>全部</option></select></div>
+      <div class="diag-field"><label>类别</label><select id="fCategory"><option>全部</option></select></div>
+      <div class="res-search"><label>关键词</label><input id="fSearch" type="text" placeholder="输入名称 / 来源 / 内容关键词" /></div>
+      <button class="btn-primary" id="searchBtn" type="button" style="padding:10px 22px">检索</button>
+    </div>
+    <div class="res-list" id="resList"><div class="res-empty">正在加载资源…</div></div>
+    <div class="res-import">
+      <details>
+        <summary>资源导入（管理功能：导入 JSON 格式的真实资源）</summary>
+        <div class="imp-inner">
+          <input type="file" id="importFile" accept=".json,application/json" />
+          <button class="btn-ghost" id="importBtn" type="button" style="padding:8px 16px">导入</button>
+          <span class="import-msg" id="importMsg"></span>
+        </div>
+      </details>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="js/resources.js"></script>
+</body></html>

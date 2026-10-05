@@ -1,0 +1,36 @@
+﻿<!doctype html>
+<html>
+<head><meta charset="UTF-8"><link rel="stylesheet" href="css/campus.css"></head>
+<body>
+<div class="campus-bg"><div class="gate"></div><div class="gate-tint"></div><div class="veil"></div></div>
+<div class="student-app">
+  <header class="header">
+    <a class="brand" href="/">
+      <div class="seal"><img src="assets/henu_logo.png" alt="校徽" id="testSeal"></div>
+      <div><div class="university">河南大学</div><div class="en">HENAN UNIVERSITY</div></div>
+      <span class="brand-split"></span>
+      <div><div class="product-name">学生端</div><div class="product-caption">概率论与数理统计</div></div>
+    </a>
+  </header>
+</div>
+<pre id="out"></pre>
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var seal = document.getElementById('testSeal');
+    var sealBox = seal.getBoundingClientRect();
+    var gate = document.querySelector('.gate');
+    var gateBg = gate ? getComputedStyle(gate).backgroundImage : 'none';
+    var bodyBg = getComputedStyle(document.body).backgroundImage;
+    var out = document.getElementById('out');
+    out.textContent = [
+      'seal img rect: ' + JSON.stringify({x:sealBox.x,y:sealBox.y,w:sealBox.width,h:sealBox.height}),
+      'seal natural: ' + seal.naturalWidth + 'x' + seal.naturalHeight,
+      'gate bg: ' + gateBg,
+      'body bg: ' + bodyBg
+    ].join('\n');
+  }, 2000);
+});
+</script>
+</body>
+</html>

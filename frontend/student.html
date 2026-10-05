@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>学生端 · ME-AITA</title>
+<link rel="stylesheet" href="css/campus.css?v=20261005a" />
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+/* ===== 学生端整体 ===== */
+.student-app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.student-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 224px minmax(620px, 1fr) 320px;
+  gap: 16px;
+  padding: 16px 28px 20px;
+  min-height: 0;
+}
+@media (max-width: 1440px) {
+  .student-main { grid-template-columns: 210px minmax(540px, 1fr) 288px; gap: 14px; padding: 14px 20px 18px; }
+}
+@media (max-width: 1100px) {
+  .student-main { grid-template-columns: 190px 1fr 260px; gap: 12px; padding: 12px 14px 16px; }
+}
+@media (max-width: 900px) {
+  .student-main { grid-template-columns: 1fr; overflow-y: auto; }
+  .sidebar-left, .sidebar-right { max-height: 300px; }
+}
+
+/* 三栏通用卡片 */
+.sidebar-left, .sidebar-right, .chat-center {
+  background: rgba(255,255,255,.94);
+  border: 1px solid rgba(200,222,248,.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 18px;
+}
+.sidebar-left { padding: 18px 12px; overflow-y: auto; }
+.sidebar-right { padding: 16px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+
+/* 左侧导航 */
+.sidebar-left .nav-title {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: .12em;
+  margin-bottom: 12px;
+  padding: 0 10px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 4px;
+  transition: all .15s;
+  position: relative;
+}
+.nav-item:hover { background: rgba(39,107,218,.06); }
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(39,107,218,.1), rgba(39,107,218,.04));
+  color: var(--blue);
+  font-weight: 700;
+}
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 20%;
+  height: 60%;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--blue);
+}
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: 0 0 auto;
+  opacity: .75;
+}
+.nav-item.active svg { opacity: 1; }
+
+/* 中间聊天区 */
+.chat-center {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.chat-header {
+  padding: 14px 22px;
+  border-bottom: 1px solid rgba(200,222,248,.5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+}
+.chat-header .chat-title { display: flex; align-items: center; gap: 10px; }
+.chat-header h2 { margin: 0; font-size: 16px; color: var(--navy); }
+.chat-header .node-tag {
+  font-size: 11.5px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(39,107,218,.07);
+  color: var(--blue);
+  font-weight: 600;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.phase-badge {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 14px;
+  background: rgba(39,107,218,.08);
+  border: 1px solid rgba(39,107,218,.12);
+  color: var(--blue);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.phase-badge.idle { background: rgba(100,125,166,.08); border-color: rgba(100,125,166,.15); color: var(--muted); }
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+.chat-body::-webkit-scrollbar { width: 8px; }
+.chat-body::-webkit-scrollbar-thumb { background: #cfe0f8; border-radius: 4px; }
+
+/* 聊天气泡 */
+.msg { max-width: 76%; padding: 12px 16px; border-radius: 16px; font-size: 15px; line-height: 1.75; word-break: break-word; }
+.msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #3d7de0, #1c66cb);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+.msg.bot {
+  align-self: flex-start;
+  background: #f4f9ff;
+  border: 1px solid #e0ebfb;
+  color: var(--ink);
+  border-bottom-left-radius: 6px;
+}
+.msg.loading { color: var(--muted); font-style: italic; }
+.msg.error { color: #c0392b; align-self: flex-start; }
+/* 掌握度变化提示 */
+.mastery-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 10px;
+  background: rgba(38,166,91,.1);
+  color: #1e8e5a;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.mastery-delta.down { background: rgba(230,81,0,.1); color: #d84315; }
+
+/* 输入区 */
+.chat-input-area {
+  padding: 14px 18px 16px;
+  border-top: 1px solid rgba(200,222,248,.5);
+  flex: 0 0 auto;
+  background: rgba(255,255,255,.5);
+}
+.chat-input-area textarea {
+  width: 100%;
+  border: 1px solid #d8e6fb;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  min-height: 44px;
+  max-height: 120px;
+  box-sizing: border-box;
+  color: var(--ink);
+  transition: border-color .15s;
+}
+.chat-input-area textarea:focus { border-color: var(--blue); }
+.input-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 9px;
+}
+.help-level-indicator { font-size: 12px; color: var(--muted); }
+.help-level-indicator strong { color: var(--blue); }
+.send-btn {
+  padding: 9px 22px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #3d7de0, #1c66cb);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.send-btn:hover { transform: scale(1.02); box-shadow: 0 6px 16px rgba(39,107,218,.25); }
+
+/* 右侧状态卡 */
+.status-section h3 {
+  font-size: 13px;
+  color: var(--navy);
+  font-weight: 800;
+  margin: 0 0 10px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(200,222,248,.5);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.status-section h3 svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 1.8; fill: none; opacity: .8; }
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 4px 0;
+}
+.status-row .label { color: var(--muted); }
+.status-row .value { color: var(--ink); font-weight: 600; }
+.mastery-bar {
+  height: 6px;
+  background: #e8f0fc;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 6px 0 2px;
+}
+.mastery-bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a90e2, #1a5fb4);
+  border-radius: 3px;
+  transition: width .4s ease;
+}
+.mastery-note { font-size: 11.5px; color: var(--muted); margin-top: 2px; min-height: 16px; }
+.help-tooltip {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: rgba(100,125,166,.06);
+  border-radius: 8px;
+  line-height: 1.7;
+}
+.help-tooltip strong { color: var(--ink); }
+/* Agent列表 */
+.agent-list { display: flex; flex-direction: column; gap: 7px; }
+.agent-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  padding: 8px 10px;
+  background: rgba(39,107,218,.05);
+  border-radius: 9px;
+}
+.agent-item .dot { width: 8px; height: 8px; border-radius: 50%; background: #b6c8e0; flex: 0 0 auto; }
+.agent-item .dot.done { background: #4caf50; }
+.agent-item .dot.running { background: #2196f3; }
+.agent-item .name { font-weight: 600; color: var(--navy); white-space: nowrap; }
+.agent-item .task { color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agent-item .status-mark { color: #4caf50; font-weight: 700; flex: 0 0 auto; }
+.agent-idle { font-size: 12px; color: var(--muted); padding: 4px 2px; }
+
+/* 页面切换 */
+.page-view { display: none; flex-direction: column; min-height: 0; flex: 1; }
+.page-view.active { display: flex; }
+
+/* 知识图谱页 */
+#knowledgeGraphChart { flex: 1; min-height: 400px; }
+.graph-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(200,222,248,.5);
+  flex: 0 0 auto;
+}
+.node-detail-panel {
+  position: absolute;
+  right: 20px;
+  top: 80px;
+  width: 260px;
+  background: #fff;
+  border: 1px solid #d8e6fb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  display: none;
+  z-index: 10;
+}
+/* 学习路径 */
+.path-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.path-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,.6);
+  border-radius: 10px;
+  border-left: 4px solid #ccc;
+  font-size: 14px;
+}
+.path-item.completed { border-left-color: #4caf50; }
+.path-item.current { border-left-color: #ff9800; background: rgba(255,152,0,.07); }
+.path-item.pending { border-left-color: #ccc; opacity: .75; }
+.path-item .status-icon { font-size: 16px; color: var(--muted); }
+.path-item.completed .status-icon { color: #4caf50; }
+.path-item.current .status-icon { color: #ff9800; }
+.path-item .mastery-pct { margin-left: auto; font-size: 12px; color: var(--muted); }
+/* 错题本 */
+.wrong-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+.wrong-card {
+  background: rgba(255,255,255,.7);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #f0d8d8;
+}
+.wrong-card .question { font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+.wrong-card .meta { font-size: 12px; color: var(--muted); }
+/* 成长报告 */
+.report-content { padding: 20px; overflow-y: auto; }
+.report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+.report-card {
+  background: rgba(255,255,255,.7);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.report-card .num { font-size: 28px; font-weight: 800; color: var(--navy); }
+.report-card .label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="campus-bg"><div class="gate"></div><div class="gate-tint"></div><div class="veil"></div></div>
+
+<div class="student-app">
+  <header class="header">
+    <a class="brand" href="/">
+      <div class="seal"><img src="assets/henu_logo.png" alt="校徽"></div>
+      <div><div class="university">河南大学</div><div class="en">HENAN UNIVERSITY</div></div>
+      <span class="brand-split"></span>
+      <div><div class="product-name">学生学习端</div><div class="product-caption">概率论与数理统计</div></div>
+    </a>
+    <div style="display:flex;gap:14px;align-items:center;">
+      <span style="font-size:13px;color:var(--muted);">学生：张三（演示数据）</span>
+      <a href="/" style="font-size:13px;color:var(--blue);text-decoration:none;">← 返回首页</a>
+    </div>
+  </header>
+
+  <div class="student-main">
+    <!-- 左侧导航 -->
+    <aside class="sidebar-left">
+      <div class="nav-title">学习中心</div>
+      <div class="nav-item active" data-page="chat">
+        <svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H4l2-2a8 8 0 1 1 15-6z"></path></svg>
+        AI学习
+      </div>
+      <div class="nav-item" data-page="graph">
+        <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"></circle><circle cx="18" cy="8" r="2.4"></circle><circle cx="8" cy="18" r="2.4"></circle><path d="M8 6.4h8M6.4 8.2l1 7.6M17 10l-7 6"></path></svg>
+        知识图谱
+      </div>
+      <div class="nav-item" data-page="path">
+        <svg viewBox="0 0 24 24"><circle cx="5" cy="19" r="2"></circle><circle cx="19" cy="5" r="2"></circle><path d="M6.7 17.6L17.6 6.7M6 7l5 5-3 3M12 6l4 4"></path></svg>
+        学习路径
+      </div>
+      <div class="nav-item" data-page="wrong">
+        <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"></path><path d="M9 9h6M9 13h4"></path></svg>
+        错题档案
+      </div>
+      <div class="nav-item" data-page="report">
+        <svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"></path></svg>
+        成长报告
+      </div>
+    </aside>
+
+    <!-- 中间主区域 -->
+    <main style="display:flex;flex-direction:column;min-height:0;">
+      <!-- AI聊天页 -->
+      <div class="page-view active" id="page-chat">
+        <div class="chat-center">
+          <div class="chat-header">
+            <div class="chat-title">
+              <h2>AI学习伙伴</h2>
+              <span class="node-tag" id="curNodeTag">t检验</span>
+            </div>
+            <span class="phase-badge idle" id="phaseBadge">等待学习任务</span>
+          </div>
+          <div class="chat-body" id="chatBody">
+            <div class="msg bot">你好，我是你的 AI 学习伙伴。<br>我会结合你的学习状态，通过提问、提示和分步引导帮助你理解问题，而不是直接替你完成任务。你可以从一道题、一个知识点，或一次学习困惑开始。</div>
+            <div class="msg bot" style="background:transparent;border:none;padding:4px 2px;font-size:13px;color:var(--muted);">
+              试试这样问：<br>· 我为什么总是分不清Z检验和t检验？<br>· 根据我的薄弱知识点出一道题<br>· 帮我规划今天的学习路径
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <textarea id="chatInput" placeholder="输入你的问题，例如：t检验和Z检验有什么区别？"></textarea>
+            <div class="input-actions">
+              <span class="help-level-indicator">帮助级别：<strong id="helpLevel">L2</strong> · 方向提示</span>
+              <button class="send-btn" id="sendBtn">发送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 知识图谱页 -->
+      <div class="page-view" id="page-graph">
+        <div class="graph-header">
+          <h2 style="margin:0;font-size:16px;color:var(--navy);">知识图谱</h2>
+          <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">点击节点查看详情 · 实时读取学习状态</p>
+        </div>
+        <div id="knowledgeGraphChart" style="position:relative;"></div>
+        <div class="node-detail-panel" id="nodeDetail"></div>
+      </div>
+
+      <!-- 学习路径页 -->
+      <div class="page-view" id="page-path">
+        <div class="graph-header" style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <h2 style="margin:0;font-size:16px;color:var(--navy);">个性化学习路径</h2>
+            <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">根据掌握度与前置关系动态规划</p>
+          </div>
+          <button class="send-btn" style="padding:7px 18px;font-size:13px;" onclick="alert('AI重新规划：已根据当前掌握度重新排序')">AI重新规划</button>
+        </div>
+        <div class="path-list" id="pathList"></div>
+      </div>
+
+      <!-- 错题页 -->
+      <div class="page-view" id="page-wrong">
+        <div class="graph-header">
+          <h2 style="margin:0;font-size:16px;color:var(--navy);">错题档案</h2>
+          <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">答错自动收录 · 与AI分析订正</p>
+        </div>
+        <div class="wrong-list" id="wrongList"></div>
+      </div>
+
+      <!-- 成长报告页 -->
+      <div class="page-view" id="page-report">
+        <div class="graph-header">
+          <h2 style="margin:0;font-size:16px;color:var(--navy);">学习成长报告</h2>
+          <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">部分指标为演示数据 · 掌握度为实时计算</p>
+        </div>
+        <div class="report-content" id="reportContent"></div>
+      </div>
+    </main>
+
+    <!-- 右侧状态栏 -->
+    <aside class="sidebar-right">
+      <div class="status-section">
+        <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>当前学习状态</h3>
+        <div class="status-row"><span class="label">当前阶段</span><span class="value" id="curPhase">课中学习</span></div>
+        <div class="status-row"><span class="label">当前知识点</span><span class="value" id="curNode">t检验</span></div>
+        <div class="status-row"><span class="label">掌握程度</span><span class="value" id="curMastery">25%</span></div>
+        <div class="mastery-bar"><div class="fill" id="masteryFill" style="width:25%"></div></div>
+        <div class="mastery-note" id="masteryNote">（演示数据）</div>
+        <div class="status-row"><span class="label">Bloom认知层级</span><span class="value">L3 · 应用</span></div>
+        <div class="status-row"><span class="label">Help Level</span><span class="value" id="rightHelpLevel">L2</span></div>
+        <div class="help-tooltip"><strong>帮助等级说明：</strong>L1 反思 · L2 方向 · L3 知识点 · L4 部分步骤 · L5 完整讲解</div>
+      </div>
+
+      <div class="status-section">
+        <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="6" r="3"></circle><path d="M5 20c.8-3.4 3.6-5.2 7-5.2s6.2 1.8 7 5.2"></path></svg>协同智能体</h3>
+        <div class="agent-list" id="agentList">
+          <div class="agent-idle">系统待命 · 等待学习任务</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const userId = new URLSearchParams(location.search).get('user') || 'student001';
+
+// 页面切换
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const page = item.dataset.page;
+    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    if (page === 'graph') initGraph();
+    if (page === 'path') loadPath();
+    if (page === 'wrong') loadWrong();
+    if (page === 'report') loadReport();
+  });
+});
+
+// AI聊天
+const chatBody = document.getElementById('chatBody');
+const chatInput = document.getElementById('chatInput');
+const phaseBadge = document.getElementById('phaseBadge');
+const PHASE_NAMES = { PRE_CLASS: '课前预习', IN_CLASS: '课中学习', POST_CLASS: '课后反思', GENERAL: '通用学习' };
+
+document.getElementById('sendBtn').addEventListener('click', sendChat);
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+});
+
+async function sendChat() {
+  const msg = chatInput.value.trim();
+  if (!msg) return;
+  chatInput.value = '';
+
+  // 用户气泡
+  const userBubble = document.createElement('div');
+  userBubble.className = 'msg user';
+  userBubble.textContent = msg;
+  chatBody.appendChild(userBubble);
+  chatBody.scrollTop = chatBody.scrollHeight;
+
+  // 加载中
+  const loading = document.createElement('div');
+  loading.className = 'msg loading';
+  loading.textContent = '正在识别学习场景，协同Agent分析中…';
+  chatBody.appendChild(loading);
+  phaseBadge.textContent = '正在识别场景…';
+  phaseBadge.classList.remove('idle');
+
+  try {
+    const res = await fetch('/api/agent/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        role: 'student',
+        user_id: userId,
+        message: msg,
+        current_knowledge_node: document.getElementById('curNode').textContent,
+      })
+    });
+    const data = await res.json();
+    loading.remove();
+
+    // AI回答（Markdown简单渲染：换行+加粗）
+    const botBubble = document.createElement('div');
+    botBubble.className = 'msg bot';
+    botBubble.innerHTML = data.answer
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    chatBody.appendChild(botBubble);
+
+    // 更新阶段徽章
+    phaseBadge.textContent = PHASE_NAMES[data.phase] || data.phase;
+    phaseBadge.classList.remove('idle');
+    if (data.phase === 'GENERAL') phaseBadge.classList.add('idle');
+
+    // 更新帮助级别
+    const hl = data.help_level || 2;
+    const HL_NAMES = {1:'反思',2:'方向提示',3:'知识点提示',4:'部分步骤',5:'完整讲解'};
+    document.getElementById('helpLevel').textContent = 'L' + hl;
+    document.getElementById('rightHelpLevel').textContent = 'L' + hl;
+    if (data.knowledge_node) {
+      document.getElementById('curNode').textContent = data.knowledge_node;
+      document.getElementById('curNodeTag').textContent = data.knowledge_node;
+    }
+
+    // 更新掌握度并显示变化
+    if (data.knowledge_updates && data.knowledge_updates.length) {
+      const ku = data.knowledge_updates[0];
+      const before = Math.round(ku.mastery_before * 100);
+      const after = Math.round(ku.mastery_after * 100);
+      document.getElementById('curMastery').textContent = after + '%';
+      document.getElementById('masteryFill').style.width = (ku.mastery_after * 100) + '%';
+      const delta = after - before;
+      const note = document.getElementById('masteryNote');
+      if (delta > 0) {
+        note.innerHTML = `<span class="mastery-delta">本轮学习后 +${delta}%</span><span style="color:var(--muted);font-size:11px;">  · 演示数据实时更新</span>`;
+      } else if (delta < 0) {
+        note.innerHTML = `<span class="mastery-delta down">${delta}%</span><span style="color:var(--muted);font-size:11px;">  · 演示数据实时更新</span>`;
+      } else {
+        note.textContent = '（演示数据）';
+      }
+    }
+
+    // 更新Agent列表
+    const agentList = document.getElementById('agentList');
+    agentList.innerHTML = '';
+    if (data.active_agents && data.active_agents.length) {
+      data.active_agents.forEach(a => {
+        const div = document.createElement('div');
+        div.className = 'agent-item';
+        div.innerHTML = `<div class="dot done"></div><span class="name">${a.name}</span><span class="task">${a.task}</span><span class="status-mark">✓</span>`;
+        agentList.appendChild(div);
+      });
+    } else {
+      agentList.innerHTML = '<div class="agent-idle">本次无Agent协同</div>';
+    }
+
+    chatBody.scrollTop = chatBody.scrollHeight;
+  } catch (err) {
+    loading.remove();
+    const errBubble = document.createElement('div');
+    errBubble.className = 'msg error';
+    errBubble.textContent = '请求失败：' + err.message;
+    chatBody.appendChild(errBubble);
+    phaseBadge.textContent = '等待学习任务';
+    phaseBadge.classList.add('idle');
+  }
+}
+
+// 知识图谱
+let graphChart = null;
+async function initGraph() {
+  if (graphChart) { graphChart.resize(); return; }
+  const res = await fetch(`/api/student/${userId}/knowledge-graph`);
+  const data = await res.json();
+
+  const chartDom = document.getElementById('knowledgeGraphChart');
+  graphChart = echarts.init(chartDom);
+
+  const colorMap = { mastered: '#4caf50', learning: '#2196f3', weak: '#ff9800', unlearned: '#9db4cf' };
+
+  const option = {
+    tooltip: { formatter: p => `${p.data.name}<br>掌握度：${Math.round(p.data.mastery*100)}%<br>状态：${p.data.status}` },
+    series: [{
+      type: 'graph',
+      layout: 'force',
+      roam: true,
+      label: { show: true, fontSize: 12, color: '#243b5a' },
+      force: { repulsion: 220, edgeLength: [90, 150] },
+      data: data.nodes.map(n => ({
+        id: n.id,
+        name: n.name,
+        mastery: n.mastery,
+        status: n.status,
+        symbolSize: 30 + n.mastery * 30,
+        itemStyle: { color: colorMap[n.status] || '#9db4cf' },
+      })),
+      links: data.edges.map(e => ({ source: e.from_node, target: e.to_node })),
+    }]
+  };
+  graphChart.setOption(option);
+
+  graphChart.on('click', params => {
+    if (params.dataType === 'node') showNodeDetail(params.data, data.nodes);
+  });
+}
+
+function showNodeDetail(nodeData, allNodes) {
+  const node = allNodes.find(n => n.id === nodeData.id);
+  const panel = document.getElementById('nodeDetail');
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <h3 style="margin:0 0 8px;color:var(--navy);">${node.name}</h3>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 8px;">${node.chapter}</p>
+    <div class="status-row"><span class="label">掌握度</span><span class="value">${Math.round(node.mastery*100)}%</span></div>
+    <div class="status-row"><span class="label">状态</span><span class="value">${node.status}</span></div>
+    <div class="status-row"><span class="label">错误次数</span><span class="value">${node.error_count}</span></div>
+    <p style="font-size:12px;color:var(--muted);margin:8px 0;">常见错因：${node.common_misconception || '暂无记录'}</p>
+    <button class="send-btn" style="width:100%;margin-top:8px;" onclick="learnNode('${node.id}','${node.name}')">与AI学习这个知识点</button>
+  `;
+}
+
+function learnNode(nodeId, nodeName) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelector('[data-page="chat"]').classList.add('active');
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-chat').classList.add('active');
+  document.getElementById('curNode').textContent = nodeId;
+  document.getElementById('curNodeTag').textContent = nodeName;
+  chatInput.value = `我们继续学习：${nodeName}`;
+  chatInput.focus();
+}
+
+// 学习路径
+async function loadPath() {
+  const res = await fetch(`/api/student/${userId}/learning-path`);
+  const data = await res.json();
+  const list = document.getElementById('pathList');
+  list.innerHTML = '';
+  const icons = { completed: '✓', current: '●', pending: '○', weak: '○', learning: '◐' };
+  data.path.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'path-item ' + p.status;
+    div.innerHTML = `<span class="status-icon">${icons[p.status] || '○'}</span><span>${p.name}</span><span class="mastery-pct">${Math.round(p.mastery*100)}%</span>`;
+    list.appendChild(div);
+  });
+}
+
+// 错题本
+async function loadWrong() {
+  const res = await fetch(`/api/student/${userId}/wrong-book`);
+  const data = await res.json();
+  const list = document.getElementById('wrongList');
+  list.innerHTML = '';
+  if (!data.wrong_questions || !data.wrong_questions.length) {
+    list.innerHTML = '<div class="agent-idle" style="padding:20px;">暂无错题记录</div>';
+    return;
+  }
+  data.wrong_questions.forEach(w => {
+    const div = document.createElement('div');
+    div.className = 'wrong-card';
+    const statusText = w.status === 'corrected' ? '已订正' : '待订正';
+    div.innerHTML = `
+      <div class="question">${w.question}</div>
+      <div class="meta">知识点：${w.node_id} · 错因：${w.misconception || '—'} · 状态：${statusText}</div>
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <button class="send-btn" style="padding:5px 14px;font-size:12px;" onclick="analyzeWrong('${w.id}','${w.node_id}')">与AI分析</button>
+        <button class="send-btn" style="padding:5px 14px;font-size:12px;background:#647da6;">再练一道</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function analyzeWrong(id, nodeId) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelector('[data-page="chat"]').classList.add('active');
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-chat').classList.add('active');
+  document.getElementById('curNode').textContent = nodeId;
+  document.getElementById('curNodeTag').textContent = nodeId;
+  chatInput.value = `帮我看一下这道错题（ID:${id}），分析我的错误原因`;
+  chatInput.focus();
+}
+
+// 成长报告
+async function loadReport() {
+  const res = await fetch(`/api/student/${userId}/report`);
+  const data = await res.json();
+  const c = document.getElementById('reportContent');
+  c.innerHTML = `
+    <p style="font-size:12px;color:var(--muted);">${data.summary_note}</p>
+    <div class="report-grid">
+      <div class="report-card"><div class="num">${data.overview.mastered}</div><div class="label">已掌握知识点</div></div>
+      <div class="report-card"><div class="num">${data.overview.learning}</div><div class="label">学习中</div></div>
+      <div class="report-card"><div class="num">${data.overview.weak}</div><div class="label">薄弱知识点</div></div>
+      <div class="report-card"><div class="num">${Math.round(data.overview.avg_mastery*100)}%</div><div class="label">平均掌握度</div></div>
+    </div>
+    <h3 style="font-size:15px;color:var(--navy);">AI学习建议</h3>
+    <p style="font-size:14px;line-height:1.8;color:var(--ink);">${data.ai_suggestion}</p>
+  `;
+}
+</script>
+</body>
+</html>

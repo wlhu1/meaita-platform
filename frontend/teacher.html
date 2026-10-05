@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>教师端 · ME-AITA</title>
+<link rel="stylesheet" href="css/campus.css?v=20261005a" />
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+/* ===== 教师端整体 ===== */
+.teacher-app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.teacher-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 224px minmax(620px, 1fr) 320px;
+  gap: 16px;
+  padding: 16px 28px 20px;
+  min-height: 0;
+}
+@media (max-width: 1440px) {
+  .teacher-main { grid-template-columns: 210px minmax(540px, 1fr) 288px; gap: 14px; padding: 14px 20px 18px; }
+}
+@media (max-width: 1100px) {
+  .teacher-main { grid-template-columns: 190px 1fr 260px; gap: 12px; padding: 12px 14px 16px; }
+}
+@media (max-width: 900px) {
+  .teacher-main { grid-template-columns: 1fr; overflow-y: auto; }
+}
+
+.sidebar-left, .sidebar-right, .center-area {
+  background: rgba(255,255,255,.94);
+  border: 1px solid rgba(200,222,248,.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 18px;
+}
+.sidebar-left { padding: 18px 12px; overflow-y: auto; }
+.sidebar-right { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+
+.sidebar-left .nav-title {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: .12em;
+  margin-bottom: 12px;
+  padding: 0 10px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 4px;
+  transition: all .15s;
+  position: relative;
+}
+.nav-item:hover { background: rgba(63,95,199,.07); }
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(63,95,199,.1), rgba(63,95,199,.04));
+  color: #3f5fc7;
+  font-weight: 700;
+}
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 20%;
+  height: 60%;
+  width: 3px;
+  border-radius: 2px;
+  background: #3f5fc7;
+}
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: 0 0 auto;
+  opacity: .75;
+}
+.nav-item.active svg { opacity: 1; }
+
+/* 中央区域 */
+.center-area { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.page-view { display: none; flex-direction: column; min-height: 0; flex: 1; }
+.page-view.active { display: flex; }
+.page-head {
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(200,222,248,.5);
+  flex: 0 0 auto;
+}
+
+/* Dashboard */
+.dashboard-content { padding: 22px; overflow-y: auto; }
+.dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 26px; }
+@media (max-width: 1100px) { .dash-grid { grid-template-columns: repeat(2, 1fr); } }
+.dash-card {
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(200,222,248,.5);
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+}
+.dash-card .num { font-size: 32px; font-weight: 800; color: var(--navy); line-height: 1.2; }
+.dash-card .label { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.weak-topics { margin-top: 8px; }
+.weak-topics .section-title { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+.weak-topics h3 { font-size: 16px; color: var(--navy); margin: 0; font-weight: 800; }
+.weak-topics .subtitle { font-size: 12px; color: var(--muted); }
+.weak-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 4px;
+  border-bottom: 1px solid rgba(200,222,248,.35);
+}
+.weak-item .name { width: 130px; font-size: 13.5px; color: var(--navy); font-weight: 600; }
+.weak-item .bar { flex: 1; height: 8px; background: #e8f0fc; border-radius: 4px; overflow: hidden; }
+.weak-item .bar .fill { height: 100%; border-radius: 4px; transition: width .4s; }
+.weak-item .pct { width: 56px; text-align: right; font-size: 13px; font-weight: 700; }
+
+/* 高频错因 */
+.misconception-list { padding: 20px 22px; overflow-y: auto; }
+.misconception-card {
+  background: rgba(255,255,255,.92);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(244,67,54,.15);
+  border-left: 4px solid #f44336;
+}
+.misconception-card h4 { margin: 0 0 6px; font-size: 14px; color: var(--navy); }
+.misconception-card p { margin: 0; font-size: 13px; color: var(--muted); }
+.misconception-card .count { font-size: 12px; color: #f44336; font-weight: 700; }
+
+/* 表单与结果 */
+.design-form { padding: 22px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; color: var(--navy); font-weight: 600; margin-bottom: 6px; }
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d8e6fb;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  color: var(--ink);
+}
+.result-area { padding: 20px 22px; overflow-y: auto; font-size: 14px; line-height: 1.8; color: var(--ink); }
+
+/* 右侧状态卡 */
+.status-section h3 {
+  font-size: 13px;
+  color: var(--navy);
+  font-weight: 800;
+  margin: 0 0 10px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(200,222,248,.5);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.status-section h3 svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 1.8; fill: none; opacity: .8; }
+.status-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; }
+.status-row .label { color: var(--muted); }
+.status-row .value { color: var(--ink); font-weight: 600; }
+.agent-list { display: flex; flex-direction: column; gap: 7px; }
+.agent-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  padding: 8px 10px;
+  background: rgba(63,95,199,.05);
+  border-radius: 9px;
+}
+.agent-item .dot { width: 8px; height: 8px; border-radius: 50%; background: #b6c8e0; flex: 0 0 auto; }
+.agent-item .dot.done { background: #4caf50; }
+.agent-item .dot.running { background: #3f5fc7; }
+.agent-item .name { font-weight: 600; color: var(--navy); white-space: nowrap; }
+.agent-item .task { color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agent-item .status-mark { color: #4caf50; font-weight: 700; flex: 0 0 auto; }
+.agent-idle { font-size: 12px; color: var(--muted); padding: 4px 2px; }
+
+.send-btn {
+  padding: 10px 24px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #3f5fc7, #2f4a9e);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.send-btn:hover { transform: scale(1.02); box-shadow: 0 6px 16px rgba(63,95,199,.25); }
+</style>
+</head>
+<body>
+<div class="campus-bg"><div class="gate"></div><div class="gate-tint"></div><div class="veil"></div></div>
+
+<div class="teacher-app">
+  <header class="header">
+    <a class="brand" href="/">
+      <div class="seal"><img src="assets/henu_logo.png" alt="校徽"></div>
+      <div><div class="university">河南大学</div><div class="en">HENAN UNIVERSITY</div></div>
+      <span class="brand-split"></span>
+      <div><div class="product-name">教师教学端</div><div class="product-caption">教学决策支持</div></div>
+    </a>
+    <div style="display:flex;gap:14px;align-items:center;">
+      <span style="font-size:13px;color:var(--muted);">王老师 · 应用统计1班（演示）</span>
+      <a href="/" style="font-size:13px;color:var(--blue);text-decoration:none;">← 返回首页</a>
+    </div>
+  </header>
+
+  <div class="teacher-main">
+    <aside class="sidebar-left">
+      <div class="nav-title">教学中心</div>
+      <div class="nav-item active" data-page="dashboard">
+        <svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"></path></svg>
+        班级总览
+      </div>
+      <div class="nav-item" data-page="graph">
+        <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"></circle><circle cx="18" cy="8" r="2.4"></circle><circle cx="8" cy="18" r="2.4"></circle><path d="M8 6.4h8M6.4 8.2l1 7.6M17 10l-7 6"></path></svg>
+        班级知识图谱
+      </div>
+      <div class="nav-item" data-page="misconception">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+        高频错因
+      </div>
+      <div class="nav-item" data-page="design">
+        <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"></path><path d="M9 9h6M9 13h4"></path></svg>
+        AI教学设计
+      </div>
+      <div class="nav-item" data-page="assessment">
+        <svg viewBox="0 0 24 24"><path d="M7 4h13v16H4V7"></path><path d="M8 12l3 3 5-6"></path></svg>
+        练习生成
+      </div>
+    </aside>
+
+    <main style="display:flex;flex-direction:column;min-height:0;">
+      <!-- Dashboard -->
+      <div class="page-view active" id="page-dashboard">
+        <div class="page-head">
+          <h2 style="margin:0;font-size:16px;color:var(--navy);">班级学情总览</h2>
+          <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">概率论与数理统计 · 应用统计1班（演示数据）</p>
+        </div>
+        <div class="dashboard-content" id="dashContent"></div>
+      </div>
+
+      <!-- 班级知识图谱 -->
+      <div class="page-view" id="page-graph">
+        <div class="page-head">
+          <h2 style="margin:0;font-size:16px;color:var(--navy);">班级知识图谱</h2>
+          <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">节点大小与颜色表示班级平均掌握率（演示数据）</p>
+        </div>
+        <div id="classGraphChart" style="flex:1;min-height:400px;"></div>
+      </div>
+
+      <!-- 高频错因 -->
+      <div class="page-view" id="page-misconception">
+        <div class="page-head" style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <h2 style="margin:0;font-size:16px;color:var(--navy);">高频错因分析</h2>
+            <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">基于错题档案实时聚合（演示数据）</p>
+          </div>
+          <button class="send-btn" style="padding:7px 18px;font-size:13px;" onclick="analyzeMisconceptions()">AI深度分析</button>
+        </div>
+        <div class="misconception-list" id="misconList"></div>
+      </div>
+
+      <!-- 教学设计 -->
+      <div class="page-view" id="page-design">
+        <div class="page-head">
+          <h2 style="margin:0;font-size:16px;color:var(--navy);">AI教学设计</h2>
+          <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">调用智谱大模型生成结构化教案</p>
+        </div>
+        <div class="design-form" id="designForm">
+          <div class="form-group">
+            <label>知识点</label>
+            <input type="text" id="designTopic" value="假设检验" />
+          </div>
+          <div class="form-group">
+            <label>课时</label>
+            <select id="designHours"><option>1课时</option><option>2课时</option></select>
+          </div>
+          <div class="form-group">
+            <label>学生水平</label>
+            <select><option>中等</option><option>较好</option><option>较弱</option></select>
+          </div>
+          <button class="send-btn" onclick="generateDesign()">生成教学设计</button>
+        </div>
+        <div class="result-area" id="designResult"></div>
+      </div>
+
+      <!-- 练习生成 -->
+      <div class="page-view" id="page-assessment">
+        <div class="page-head">
+          <h2 style="margin:0;font-size:16px;color:var(--navy);">分层练习生成</h2>
+          <p style="margin:4px 0 0;font-size:12px;color:var(--muted);">调用智谱大模型生成三层难度练习</p>
+        </div>
+        <div class="design-form">
+          <div class="form-group">
+            <label>知识点</label>
+            <input type="text" id="assessTopic" value="假设检验" />
+          </div>
+          <div class="form-group">
+            <label>难度</label>
+            <select><option>基础</option><option>中等</option><option>提高</option></select>
+          </div>
+          <button class="send-btn" onclick="generateAssessment()">生成分层练习</button>
+        </div>
+        <div class="result-area" id="assessResult"></div>
+      </div>
+    </main>
+
+    <aside class="sidebar-right">
+      <div class="status-section">
+        <h3><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"></path></svg>教学概览</h3>
+        <div class="status-row"><span class="label">课程</span><span class="value" id="tCourse">概率论与数理统计</span></div>
+        <div class="status-row"><span class="label">班级</span><span class="value" id="tClass">应用统计1班（演示）</span></div>
+        <div class="status-row"><span class="label">平均掌握度</span><span class="value" id="tMastery">—</span></div>
+        <div class="status-row"><span class="label">待关注</span><span class="value" id="tAtRisk" style="color:#f44336;">—</span></div>
+      </div>
+
+      <div class="status-section">
+        <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="6" r="3"></circle><path d="M5 20c.8-3.4 3.6-5.2 7-5.2s6.2 1.8 7 5.2"></path></svg>协同智能体</h3>
+        <div class="agent-list" id="agentList">
+          <div class="agent-idle">系统待命 · 已加载班级数据</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+// 页面切换
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const page = item.dataset.page;
+    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    if (page === 'dashboard') loadDashboard();
+    if (page === 'graph') initClassGraph();
+    if (page === 'misconception') loadMisconceptions();
+  });
+});
+
+// 知识节点中文名映射（前端展示层，不改后端数据）
+const NODE_NAMES = {
+  'probability':'概率论基础','conditional_prob':'条件概率','random_var':'随机变量',
+  'discrete_dist':'离散型分布','continuous_dist':'连续型分布','expectation':'数学期望',
+  'variance':'方差','lln':'大数定律','clt':'中心极限定理','pop_sample':'总体与样本',
+  'point_est':'点估计','interval_est':'区间估计','hypothesis_test':'假设检验',
+  'z_test':'Z检验','t_test':'t检验','chi2_test':'卡方检验',
+  'mean':'总体均值','variance_known':'总体方差','sample_mean':'样本均值',
+  'standard_error':'标准误','h0':'原假设','h1':'备择假设',
+  'significance_level':'显著性水平','rejection_region':'拒绝域','p_value':'p值'
+};
+const displayName = id => NODE_NAMES[id] || id;
+
+// Dashboard（从后端实时读取）
+async function loadDashboard() {
+  const res = await fetch('/api/teacher/dashboard');
+  const data = await res.json();
+  document.getElementById('dashContent').innerHTML = `
+    <div class="dash-grid">
+      <div class="dash-card"><div class="num">${Math.round(data.avg_mastery*100)}%</div><div class="label">平均掌握度</div></div>
+      <div class="dash-card"><div class="num">${Math.round(data.avg_accuracy*100)}%</div><div class="label">平均正确率</div></div>
+      <div class="dash-card"><div class="num">${data.student_count}</div><div class="label">班级人数</div></div>
+      <div class="dash-card"><div class="num" style="color:#f44336;">${data.at_risk_students.length}</div><div class="label">待关注学生</div></div>
+    </div>
+    <div class="weak-topics">
+      <div class="section-title">
+        <h3>班级薄弱知识 TOP 5</h3>
+        <span class="subtitle">基于5名演示学生实时学习状态聚合</span>
+      </div>
+      ${data.weak_topics.map(t => {
+        const pct = Math.round(t.mastery*100);
+        const color = pct < 25 ? '#e65100' : pct < 40 ? '#ff9800' : pct < 60 ? '#f9a825' : '#1e8e5a';
+        return `<div class="weak-item">
+          <span class="name">${displayName(t.name)}</span>
+          <div class="bar"><div class="fill" style="width:${pct}%;background:${color}"></div></div>
+          <span class="pct" style="color:${color}">${pct}%</span>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  // 右侧状态实时更新
+  document.getElementById('tMastery').textContent = Math.round(data.avg_mastery*100) + '%';
+  document.getElementById('tAtRisk').textContent = data.at_risk_students.length + '人';
+}
+loadDashboard();
+
+// 班级知识图谱
+let classGraph = null;
+async function initClassGraph() {
+  if (classGraph) { classGraph.resize(); return; }
+  const res = await fetch('/api/teacher/knowledge-graph');
+  const data = await res.json();
+  const chartDom = document.getElementById('classGraphChart');
+  classGraph = echarts.init(chartDom);
+
+  const option = {
+    tooltip: { formatter: p => `${p.data.name}<br>班级掌握率：${Math.round(p.data.mastery*100)}%<br>高错误人数：${p.data.high_error_students}人` },
+    series: [{
+      type: 'graph',
+      layout: 'force',
+      roam: true,
+      label: { show: true, fontSize: 12, color: '#243b5a' },
+      force: { repulsion: 220, edgeLength: [90, 150] },
+      data: data.nodes.map(n => ({
+        id: n.id,
+        name: displayName(n.name),
+        mastery: n.class_mastery,
+        high_error_students: n.high_error_students,
+        symbolSize: 25 + n.class_mastery * 35,
+        itemStyle: { color: n.class_mastery > 0.6 ? '#4caf50' : n.class_mastery > 0.4 ? '#ff9800' : '#f44336' },
+      })),
+      links: data.edges.map(e => ({ source: e.from_node, target: e.to_node })),
+    }]
+  };
+  classGraph.setOption(option);
+}
+
+// 高频错因（匹配后端真实字段）
+async function loadMisconceptions() {
+  const res = await fetch('/api/teacher/misconceptions');
+  const data = await res.json();
+  const list = document.getElementById('misconList');
+  if (!data.misconceptions || !data.misconceptions.length) {
+    list.innerHTML = '<div class="agent-idle" style="padding:20px;">暂无真实错题数据，与学生端互动后将实时聚合</div>';
+    return;
+  }
+  list.innerHTML = data.misconceptions.map(m => `
+    <div class="misconception-card">
+      <h4>${m.error_type} <span class="count">${m.total_count}次 · ${m.student_count}名学生</span></h4>
+      <p>对应知识点：${displayName(m.node_id)}</p>
+    </div>
+  `).join('');
+}
+
+function analyzeMisconceptions() {
+  const list = document.getElementById('misconList');
+  const tip = document.createElement('div');
+  tip.style.cssText = 'padding:16px;background:rgba(63,95,199,.06);border:1px solid rgba(63,95,199,.12);border-radius:12px;margin-bottom:12px;font-size:13.5px;line-height:1.8;color:var(--ink);';
+  tip.innerHTML = '<strong>AI分析结论：</strong>学生在假设检验部分的错误集中在「条件判断」环节，本质原因是对Z检验和t检验的分布前提理解不透彻。建议增加对比表格教学，让学生先判断条件再选择方法。';
+  list.prepend(tip);
+}
+
+// 教学设计
+async function generateDesign() {
+  const topic = document.getElementById('designTopic').value;
+  const el = document.getElementById('designResult');
+  el.innerHTML = '<div class="agent-idle" style="padding:10px;">正在调用智谱大模型生成教学设计…（约需10-20秒）</div>';
+  try {
+    const res = await fetch('/api/teacher/design', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic })
+    });
+    const data = await res.json();
+    el.innerHTML = data.design.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+  } catch (e) {
+    el.innerHTML = '<div class="msg error">生成失败，请稍后重试</div>';
+  }
+}
+
+// 练习生成
+async function generateAssessment() {
+  const topic = document.getElementById('assessTopic').value;
+  const el = document.getElementById('assessResult');
+  el.innerHTML = '<div class="agent-idle" style="padding:10px;">正在调用智谱大模型生成分层练习…（约需10-20秒）</div>';
+  try {
+    const res = await fetch('/api/teacher/assessment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic })
+    });
+    const data = await res.json();
+    el.innerHTML = data.assessment.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+  } catch (e) {
+    el.innerHTML = '<div class="msg error">生成失败，请稍后重试</div>';
+  }
+}
+</script>
+</body>
+</html>

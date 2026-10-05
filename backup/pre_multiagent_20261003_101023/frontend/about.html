@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>关于我们｜ME-AITA 教师成长智能体</title>
+<link rel="stylesheet" href="css/meaita.css" />
+<link rel="stylesheet" href="css/campus.css" />
+</head>
+<body>
+<div class="campus-bg" aria-hidden="true"><div class="gate"></div><div class="gate-tint"></div><div class="veil"></div></div>
+<div class="page-bg" aria-hidden="true"></div>
+<header class="header">
+  <a class="brand" href="index.html"><div class="seal"><img src="assets/henu_logo.png" alt="河南大学校徽"></div>
+  <div><div class="university">河南大学</div><div class="en">HENAN UNIVERSITY</div></div>
+  <span class="brand-split"></span>
+  <div><div class="product-name">ME-AITA</div><div class="product-caption">教师成长智能体</div></div></a>
+  <nav class="topnav">
+    <a class="user-menu" href="index.html"><span class="avatar">⌂</span><span>返回首页</span></a>
+  </nav>
+</header>
+<main class="sub-page">
+  <div class="sub-head"><h1>关于我们</h1><a class="back-link" href="index.html">← 返回首页</a></div>
+  <div class="trial-note">本页面介绍 ME-AITA 教师成长智能体的定位、功能与使用方式。</div>
+  <div class="glass-card" style="line-height:1.9; font-size:14.5px; color:#274e8d;">
+    <h2 style="color:#173c7b; margin-top:0;">平台定位</h2>
+    <p>ME-AITA 教师成长智能体是河南大学面向基础教育教师专业发展建设的智能支持平台，以“学用相生 · 研创贯通”为理念，为师范生与中小学在职教师提供数字素养提升、教学设计、课堂实践、教研反思和专业成长方面的智能支持。</p>
+
+    <h2 style="color:#173c7b;">主要功能</h2>
+    <ul>
+      <li><b>智能问答</b>：基于智谱大模型，支持多轮对话、流式输出、Markdown 与数学公式显示，辅助教学设计、课例研究、教研反思等。</li>
+      <li><b>数字素养诊断</b>：依据《教师数字素养》（JY/T 0646—2022）五维度提供试用版基础测评，输出能力分析与发展建议。</li>
+      <li><b>优质资源推荐</b>：本地资源库支持按学段、学科、类别检索课程标准、数字素养材料、教学案例与 AI 教学工具指南。</li>
+      <li><b>教师社区</b>：本地轻量教研讨论板，支持发布教研问题、查看讨论、删除本人发布内容。</li>
+    </ul>
+
+    <h2 style="color:#173c7b;">使用说明</h2>
+    <ol>
+      <li>在首页中央聊天框输入教学问题，按 Enter 或点击发送按钮即可获得智能回复。</li>
+      <li>通过右上角“会话”菜单可以新建会话、切换历史会话或删除当前会话。</li>
+      <li>从底部功能入口进入数字素养诊断与优质资源推荐。</li>
+      <li>模型生成的教案、教学建议等为辅助参考内容，请结合课程标准、教材版本与学情审核后使用。</li>
+    </ol>
+
+    <h2 style="color:#173c7b;">本地部署说明</h2>
+    <p>本版本为本地单机部署，所有会话、测评记录与社区帖子均保存在本机 <code>data/meaita.db</code> 中，不会上传到任何第三方服务器。大模型推理通过智谱 AI 官方 API 完成。</p>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+</body></html>

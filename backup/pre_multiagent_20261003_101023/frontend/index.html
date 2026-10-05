@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta name="theme-color" content="#eaf4ff" />
+<title>ME-AITA 教师成长智能体｜河南大学</title>
+<link rel="stylesheet" href="css/meaita.css" />
+<link rel="stylesheet" href="css/campus.css?v=6" />
+</head>
+<body class="home-app">
+<div class="campus-bg" aria-hidden="true"><div class="gate"></div><div class="gate-tint"></div><div class="veil"></div></div>
+<div class="page-bg" aria-hidden="true"></div>
+
+<header class="header">
+  <a class="brand" href="#home" aria-label="ME-AITA首页">
+    <div class="seal" aria-hidden="true"><img src="assets/henu_logo.png" alt="河南大学校徽"></div>
+    <div><div class="university">河南大学</div><div class="en">HENAN UNIVERSITY</div></div>
+    <span class="brand-split"></span>
+    <div><div class="product-name">ME-AITA</div><div class="product-caption">教师成长智能体</div></div>
+  </a>
+  <nav class="topnav" aria-label="顶部导航">
+    <a class="topnav-link" href="#chat">智慧教育</a>
+    <a class="topnav-link" href="resources.html">资源中心</a>
+    <a class="topnav-link" href="community.html">教师社区</a>
+    <a class="topnav-link" href="about.html">关于我们</a>
+    <button class="user-menu" id="teacherEntry" type="button">
+      <span class="avatar">师</span><span>教师入口</span><span class="caret">⌄</span>
+    </button>
+  </nav>
+</header>
+
+<main class="main" id="home">
+  <section class="hero" aria-label="平台介绍">
+    <h1>ME-AITA 教师成长智能体</h1>
+    <p class="subtitle">AI 赋能基础教育 · 智慧引领教师成长</p>
+    <p class="motto">学用相生 · 研创贯通</p>
+  </section>
+
+  <section class="chat-shell" id="chat" aria-label="智能问答区">
+    <div class="chat-card" id="chatCard">
+      <div class="chat-topbar">
+        <div class="greeting">
+          <div class="robot" aria-hidden="true"></div>
+          <div class="hello">
+            <h2>你好！我是 ME-AITA 教师成长智能体</h2>
+            <p>教学设计 · 教研反思 · 专业成长，随时为你提供支持。</p>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button type="button" class="session-btn" id="sessionBtn" aria-haspopup="true" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            会话
+          </button>
+          <div class="session-menu" id="sessionMenu" role="menu" hidden>
+            <div class="session-menu-head">历史会话</div>
+            <select id="sessionSelect" aria-label="历史会话"></select>
+            <div class="session-menu-actions">
+              <button type="button" class="chip-btn" id="newSessionBtn">＋ 新建会话</button>
+              <button type="button" class="chip-btn danger" id="delSessionBtn">删除当前</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-history" id="chatHistory" aria-live="polite" aria-label="对话记录"></div>
+
+      <form class="chat-compose" id="chatForm">
+        <label for="ask" class="sr-only">输入您的问题</label>
+        <textarea id="ask" placeholder="请输入您的问题，例如：如何利用AI设计一堂初中数学课？" rows="2" required></textarea>
+        <div class="compose-bottom">
+          <div class="controls">
+            <button type="button" class="chip-btn" id="modelToggle" aria-label="当前模型">✧ <span id="modelName">加载中…</span></button>
+            <button type="button" class="chip-btn" id="searchToggle" aria-pressed="false">◎ 联网搜索</button>
+          </div>
+          <button class="send" type="submit" aria-label="发送消息" id="sendBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          </button>
+        </div>
+      </form>
+
+      <div class="samples" id="samples">
+        <span class="hint">你可以试试：</span>
+        <button class="sample" data-question="如何设计一个跨学科的项目式学习活动？">如何设计一个跨学科的项目式学习活动？</button>
+        <button class="sample" data-question="生成一份初中数学单元教学设计">生成一份初中数学单元教学设计</button>
+        <button class="sample" data-question="教师如何开展课例研究？">教师如何开展课例研究？</button>
+        <button class="sample" data-question="AI在课堂教学中的应用案例">AI在课堂教学中的应用案例</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-grid" aria-label="快捷功能入口">
+    <button class="feature blue" data-feature="智能问答">
+      <span class="feature-icon" aria-hidden="true">☏</span>
+      <span class="feature-text"><h3>智能问答</h3><p>教学设计 · 政策解读<br/>问题咨询 · 专业发展</p></span>
+      <span class="arrow" aria-hidden="true">›</span>
+    </button>
+    <button class="feature purple" data-feature="数字素养诊断">
+      <span class="feature-icon" aria-hidden="true">▥</span>
+      <span class="feature-text"><h3>数字素养诊断</h3><p>了解能力现状<br/>获取发展建议</p></span>
+      <span class="arrow" aria-hidden="true">›</span>
+    </button>
+    <button class="feature teal" data-feature="优质资源推荐">
+      <span class="feature-icon" aria-hidden="true">▤</span>
+      <span class="feature-text"><h3>优质资源推荐</h3><p>精品课程 · 研究文献<br/>工具资源 · 实践案例</p></span>
+      <span class="arrow" aria-hidden="true">›</span>
+    </button>
+  </section>
+
+  <p class="footnote">ME-AITA 教师成长智能体 · 河南大学 · 已接入智谱大模型（本地部署版）</p>
+</main>
+
+<div class="site-dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+  <div class="dialog-box">
+    <div class="dialog-top"><h2 id="dialogTitle">功能入口</h2><button class="icon-close" id="closeDialog" aria-label="关闭">×</button></div>
+    <p id="dialogDesc"></p>
+    <div class="dialog-tiles" id="dialogTiles"></div>
+    <p class="small-note" id="dialogNote">说明：点击建议问题将填入聊天框并可直接提问。</p>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="vendor/marked.min.js"></script>
+<script src="vendor/highlight.min.js"></script>
+<script src="vendor/katex/katex.min.js"></script>
+<script src="vendor/katex/auto-render.min.js"></script>
+<link rel="stylesheet" href="vendor/highlight-github.min.css" />
+<link rel="stylesheet" href="vendor/katex/katex.min.css" />
+<script src="js/app.js?v=4"></script>
+</body></html>
