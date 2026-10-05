@@ -28,3 +28,4 @@ debug_*.log
 # IDE
 .vscode/
 .idea/
+cloudflared.exe
